@@ -8,7 +8,7 @@ class icinga(object):
         self.login=login
         self.password=password
         self.url=url
-        self.port=port
+        self.port=str(port)
         self.verify=verify
     def add_host(self, name, templates=[], **attrs):
         url_path='/v1/objects/hosts/'
@@ -16,7 +16,19 @@ class icinga(object):
         if templates:
             data['templates']=templates
         data['attrs']=attrs
+        headers={'Accept': 'application/json'}
         data_json=json.dumps(data)
         return requests.put(self.url+':'+self.port+url_path+name, \
-                            data=data_json, auth=(self.login, self.password),\
+                            headers=headers,data=data_json, \
+                            v auth=(self.login, self.password), \
                             verify=self.verify)
+    def del_host(self, name, cascade=True):
+        url_path='/v1/objects/hosts/'
+        appends=''
+        headers={'Accept': 'application/json'}
+        if cascade:
+            appends="?cascade=1"
+        return requests.delete(self.url+':'+self.port+url_path+name+appends, \
+                            headers=headers,data="{}", \
+                            auth=(self.login, self.password), \
+                            verify=self.verify) 
