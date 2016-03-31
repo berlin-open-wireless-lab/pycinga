@@ -19,6 +19,14 @@ class icinga(object):
                             auth=(self.login, self.password), \
                             verify=self.verify)
 
+    def mod_object(self, name, obj_type, data_json):
+        url_path='/v1/objects/'+obj_type+'/'
+        headers={'Accept': 'application/json'}
+        return requests.post(self.url+':'+self.port+url_path+name, \
+                             headers=headers,data=data_json, \
+                             auth=(self.login, self.password), \
+                             verify=self.verify)
+
     def del_object(self, name, obj_type, cascade):
         url_path='/v1/objects/'+obj_type+'/'
         headers={'Accept': 'application/json'}
@@ -37,6 +45,12 @@ class icinga(object):
         data['attrs']=attrs
         data_json=json.dumps(data)
         return self.add_object(name, 'hosts', data_json)
+
+    def mod_host(self, name, **attrs):
+        data={}
+        data['attrs']=attrs
+        data_json=json.dumps(data)
+        return self.mod_object(name, 'hosts', data_json)
 
     def del_host(self, name, cascade=True):
         return self.del_object(name, 'hosts', cascade)
