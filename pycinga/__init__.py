@@ -10,25 +10,33 @@ class icinga(object):
         self.url=url
         self.port=str(port)
         self.verify=verify
-    def add_host(self, name, templates=[], **attrs):
-        url_path='/v1/objects/hosts/'
-        data={}
-        if templates:
-            data['templates']=templates
-        data['attrs']=attrs
+
+    def add_object(self, name, obj_type, data_json):
+        url_path='/v1/objects/'+obj_type+'/'
         headers={'Accept': 'application/json'}
-        data_json=json.dumps(data)
         return requests.put(self.url+':'+self.port+url_path+name, \
                             headers=headers,data=data_json, \
-                            v auth=(self.login, self.password), \
+                            auth=(self.login, self.password), \
                             verify=self.verify)
-    def del_host(self, name, cascade=True):
-        url_path='/v1/objects/hosts/'
-        appends=''
+
+    def del_object(self, name, obj_type, cascade):
+        url_path='/v1/objects/'+obj_type+'/'
         headers={'Accept': 'application/json'}
+        appends=''
         if cascade:
             appends="?cascade=1"
         return requests.delete(self.url+':'+self.port+url_path+name+appends, \
                             headers=headers,data="{}", \
                             auth=(self.login, self.password), \
                             verify=self.verify) 
+
+    def add_host(self, name, templates=[], **attrs):
+        data={}
+        if templates:
+            data['templates']=templates
+        data['attrs']=attrs
+        data_json=json.dumps(data)
+        return self.add_object(name, 'hosts', data_json)
+
+    def del_host(self, name, cascade=True):
+        return self.del_object(name, 'hosts', cascade)
