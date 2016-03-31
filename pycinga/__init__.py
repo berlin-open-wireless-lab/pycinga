@@ -18,6 +18,11 @@ class icinga(object):
                             headers=headers,data=data_json, \
                             auth=(self.login, self.password), \
                             verify=self.verify)
+    def get_object(self, name, obj_type):
+        url_path='/v1/objects/'+obj_type+'/'
+        return requests.get(self.url+':'+self.port+url_path+name, \
+                            auth=(self.login, self.password), \
+                            verify=self.verify)
 
     def mod_object(self, name, obj_type, data_json):
         url_path='/v1/objects/'+obj_type+'/'
@@ -45,6 +50,13 @@ class icinga(object):
         data['attrs']=attrs
         data_json=json.dumps(data)
         return self.add_object(name, 'hosts', data_json)
+
+    def get_host(self, name='', as_object=True):
+        resp = self.get_object(name, 'hosts')
+        if as_object:
+            return json.loads(resp.text)
+        else:
+            return resp
 
     def mod_host(self, name, **attrs):
         data={}
