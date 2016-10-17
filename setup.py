@@ -26,5 +26,5 @@ classifiers=[
 ],
 keywords='icinga',
 packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
-install_requires=['requests', 'json']
+install_requires=['requests']
 )
