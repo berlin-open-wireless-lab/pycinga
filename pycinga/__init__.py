@@ -66,3 +66,27 @@ class icinga(object):
 
     def del_host(self, name, cascade=True):
         return self.del_object(name, 'hosts', cascade)
+
+    def add_service(self, name, templates=[], **attrs):
+        data={}
+        if templates:
+            data['templates']=templates
+        data['attrs']=attrs
+        data_json=json.dumps(data)
+        return self.add_object(name, 'services', data_json)
+
+    def get_service(self, name='', as_object=True):
+        resp = self.get_object(name, 'services')
+        if as_object:
+            return json.loads(resp.text)
+        else:
+            return resp
+
+    def mod_service(self, name, **attrs):
+        data={}
+        data['attrs']=attrs
+        data_json=json.dumps(data)
+        return self.mod_object(name, 'services', data_json)
+
+    def del_service(self, name, cascade=True):
+        return self.del_object(name, 'services', cascade)
